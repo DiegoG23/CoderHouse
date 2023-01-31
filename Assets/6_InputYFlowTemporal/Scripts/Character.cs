@@ -4,14 +4,19 @@ using UnityEngine;
 
 namespace InputYFlowTemporal
 {
-    public class Player : MonoBehaviour
+    public class Character : MonoBehaviour
     {
         [SerializeField] private int health = 100;
         [SerializeField] private float speed = 8.0f;
         [SerializeField] private float dashLength = 5.0f;
         [SerializeField] private float rotationSpeed = 300.0f;
+        [SerializeField] private KeyCode fireKeyCode;
+        [SerializeField] private KeyCode crouchKeyCode;
+        [SerializeField] private KeyCode dashKeyCode;
+        [SerializeField] private string vAxisName = "Vertical";
+        [SerializeField] private string hAxisName = "Horizontal";
 
-        private Gun[] guns;
+        private Gun gun;
         private bool isCrouched = false;
         private bool isDetected = false;
 
@@ -19,7 +24,11 @@ namespace InputYFlowTemporal
         // Start is called before the first frame update
         void Start()
         {
-            this.guns = this.GetComponentsInChildren<Gun>();
+            foreach (var item in Input.GetJoystickNames())
+            {
+               Debug.Log(item);
+            }
+            this.gun = this.GetComponentInChildren<Gun>();
         }
 
         // Update is called once per frame
@@ -32,16 +41,15 @@ namespace InputYFlowTemporal
         {
             MovementHandler();
             ShootHandler();
-            //CrouchHandler();
-            //DashHandler();
-            Debug.Log("axis sign: " + Mathf.Sign(Input.GetAxis("Vertical")));
+            CrouchHandler();
+            DashHandler();
         }
 
         void ShootHandler()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(fireKeyCode))
             {
-                foreach (Gun gun in guns)
+                if (gun != null)
                 {
                     gun.Shoot();
 
@@ -51,7 +59,7 @@ namespace InputYFlowTemporal
 
         void CrouchHandler()
         {
-            if (Input.GetKeyDown(KeyCode.C))
+            if (Input.GetKeyDown(crouchKeyCode))
             {
                 isCrouched = !isCrouched;
                 float height = isCrouched ? 0.5f : 1;
@@ -61,9 +69,9 @@ namespace InputYFlowTemporal
 
         void DashHandler()
         {
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(dashKeyCode))
             {
-                float vAxis = Input.GetAxis("Vertical");
+                float vAxis = Input.GetAxis(vAxisName);
                 float translation = vAxis + dashLength * Mathf.Sign(vAxis);
                 transform.Translate(0, 0, translation);
 
@@ -75,8 +83,8 @@ namespace InputYFlowTemporal
             // Get the horizontal and vertical axis.
             // By default they are mapped to the arrow keys.
             // The value is in the range -1 to 1
-            float translation = Input.GetAxis("Vertical") * speed;
-            float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
+            float translation = Input.GetAxis(vAxisName) * speed;
+            float rotation = Input.GetAxis(hAxisName) * rotationSpeed;
 
             // Make it move 10 meters per second instead of 10 meters per frame...
             translation *= Time.deltaTime;

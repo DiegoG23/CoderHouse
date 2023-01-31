@@ -15,7 +15,6 @@ namespace InputYFlowTemporal
         private void Start()
         {
             lifetime += Time.time;
-            //Ball.Destroy(gameObject, lifetime);
         }
 
 

@@ -4,24 +4,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Camera
+namespace Camaras
 {
 
     public class CameraController : MonoBehaviour
     {
-        [SerializeField] private CinemachineVirtualCamera camera1;
-        [SerializeField] private CinemachineVirtualCamera camera2;
-        [SerializeField] private CinemachineVirtualCamera[] cameras;
+        [SerializeField] private GameController gameController;
+        [SerializeField] private CinemachineVirtualCamera navigationCamera;
+        [SerializeField] private CinemachineVirtualCamera fishingCamera;
+
+        private CinemachineVirtualCamera[] cameras = new CinemachineVirtualCamera[2];
+
+        private void Start()
+        {
+            cameras[0] = navigationCamera;
+            cameras[1] = fishingCamera;
+        }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (Input.GetKeyDown(gameController.modeToggleKeyCode))
             {
-                TurnOnCamera(camera2);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                TurnOnCamera(camera2);
+                if (gameController.viewMode == ViewModes.NAVIGATING)
+                {
+                    TurnOnCamera(navigationCamera);
+                }
+                else
+                {
+                    TurnOnCamera(fishingCamera);
+                }
             }
         }
 
